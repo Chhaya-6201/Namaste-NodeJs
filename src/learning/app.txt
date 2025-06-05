@@ -1,0 +1,89 @@
+const express=require('express');
+const app=express();
+const {adminAuth}=require("./middlewares/auth.js")
+
+now code for handling any incoming request toour server,also known as request handler
+
+Middlewares
+GET /users=>It will go through the chain of middlewares and then it will handle the response
+So whenever you make an API call it goes through the middleware chain and it finally goes to request handler
+
+GET /users=> It checks all the app.xxx("matching route") functions
+
+Handle Auth Middleware for all request GET,POST,PUT and DELETE
+
+app.use("/admin",(req,res,next)=>{
+   console.log("Admin auth is getting checked"); 
+   const token="yz";
+   const isAdminAuthorized = token ==="xyz";
+   if(!isAdminAuthorized){
+    res.status(401).send("Unauthorized Request");
+   }else{
+    next();
+   }
+})
+
+app.use("/admin",adminAuth);
+
+app.get("/admin/getAllData",(req,res)=>{   
+    res.send("All data sent");  
+})
+
+app.delete("/admin/deleteUser",(req,res)=>{
+    res.send("Deleted a user"); 
+})
+
+app.use("/",(req,res,next)=>{
+    next();
+})
+app.get("/user",(req,res,next)=>{
+    console.log("Handling /user route");
+    next();
+},
+(req,res,next)=>{
+    next();   
+},
+(req,res,next)=>{
+res.send("2nd Route Handler");
+})
+
+app.use("/user",(req,res,next)=>{
+    console.log("Handling the route user!!");
+     res.send("Response!!");
+    next();
+},
+(req,res)=>{
+    console.log("Handling the route user 2!!");
+    res.send("2nd Response");    
+}
+);
+
+
+This will only handle GET call to /user
+app.get("/user/:userId/:name/:password",(req,res)=>{
+    console.log(req.params);    
+  res.send({firstName:"Akshay",lastName:"Saini"});
+})
+
+app.post("/user",(req,res)=>{
+    //saving data to database
+    res.send("Data successfully saved to database")
+})
+ 
+app.delete("/user",(req,res)=>{
+    res.send("Deleted user successfully");
+})
+
+
+//this will match all the HTTP method API calls to /test
+app.use("/test",(req,res)=>{
+    res.send("Hello from test");
+    
+});
+
+
+                // callback function - it will be called only if your server is listening properly
+app.listen(3000,()=>{
+    console.log("Server listening on port 3000");
+    
+});
